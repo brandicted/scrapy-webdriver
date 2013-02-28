@@ -17,7 +17,7 @@ class WebdriverSpiderMiddleware(object):
         return cls(crawler)
 
     def process_start_requests(self, start_requests, spider):
-        """Return start requests with some reordered by the manager.
+        """Return start requests, with some reordered by the manager.
 
         The reordering occurs as a result of some requests waiting to gain
         access to the webdriver instance. Those waiting requests are queued up
@@ -28,7 +28,7 @@ class WebdriverSpiderMiddleware(object):
         return self._process_requests(start_requests, start=True)
 
     def process_spider_output(self, response, result, spider):
-        """Return spider result with some requests reordered by the manager.
+        """Return spider result, with some requests reordered by the manager.
 
         See ``process_start_requests`` for a description of the reordering.
 
@@ -36,6 +36,10 @@ class WebdriverSpiderMiddleware(object):
         for item_or_request in self._process_requests(result):
             yield item_or_request
         if isinstance(response.request, WebdriverRequest):
+            # We are here because the current request holds the webdriver lock.
+            # That lock was kept for the entire duration of the response
+            # parsing callback to keep the webdriver instance intact, and we
+            # now release it.
             self.manager.release(response.request.url)
             next_request = self.manager.acquire_next()
             if next_request is not WebdriverRequest.WAITING:
