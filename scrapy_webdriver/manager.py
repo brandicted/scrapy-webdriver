@@ -20,6 +20,14 @@ class WebdriverManager(object):
         elif self._browser is not None:
             self._webdriver = self._browser
 
+    @classmethod
+    def valid_settings(cls, settings):
+        browser = settings.get('WEBDRIVER_BROWSER')
+        if isinstance(browser, basestring):
+            return getattr(webdriver, browser, None) is not None
+        else:
+            return browser is not None
+
     @property
     def webdriver(self):
         """Return the webdriver instance, instantiate it if necessary."""
