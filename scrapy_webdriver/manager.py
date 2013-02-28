@@ -13,13 +13,18 @@ class WebdriverManager(object):
         self._lock = Lock()
         self._wait_queue = deque()
         self._wait_inpage_queue = deque()
-        self._webdriver = crawler.settings.get('_WEBDRIVER_INSTANCE', None)
+        self._browser = crawler.settings.get('WEBDRIVER_BROWSER', None)
+        self._webdriver = None
+        if isinstance(self._browser, basestring):
+            self._browser = getattr(webdriver, self._browser)
+        elif self._browser is not None:
+            self._webdriver = self._browser
 
     @property
     def webdriver(self):
         """Return the webdriver instance, instantiate it if necessary."""
         if self._webdriver is None:
-            self._webdriver = webdriver.PhantomJS()
+            self._webdriver = self._browser()
             self.crawler.signals.connect(self._cleanup, signal=engine_stopped)
         return self._webdriver
 

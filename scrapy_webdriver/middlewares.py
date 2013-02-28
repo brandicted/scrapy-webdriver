@@ -1,4 +1,4 @@
-from scrapy.exceptions import IgnoreRequest, NotConfigured
+from scrapy.exceptions import IgnoreRequest
 
 from .http import WebdriverInPageRequest, WebdriverRequest
 from .manager import WebdriverManager
@@ -11,8 +11,6 @@ class WebdriverSpiderMiddleware(object):
 
     @classmethod
     def from_crawler(cls, crawler):
-        if not crawler.settings.getbool('WEBDRIVER_ENABLED'):
-            raise NotConfigured
         return cls(crawler)
 
     def process_start_requests(self, start_requests, spider):

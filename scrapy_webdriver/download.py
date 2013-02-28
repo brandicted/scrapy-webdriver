@@ -14,7 +14,7 @@ class WebdriverDownloadHandler(object):
 
     """
     def __init__(self, settings):
-        self._enabled = settings.getbool('WEBDRIVER_ENABLED')
+        self._enabled = settings.get('WEBDRIVER_BROWSER') is not None
         self._fallback_handler = load_object(FALLBACK_HANDLER)(settings)
 
     def download_request(self, request, spider):

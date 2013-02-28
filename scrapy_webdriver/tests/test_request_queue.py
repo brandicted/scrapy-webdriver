@@ -18,8 +18,7 @@ BASE_SETTINGS = dict(
     },
     SPIDER_MIDDLEWARES={
         'scrapy_webdriver.middlewares.WebdriverSpiderMiddleware': 543,
-    },
-    WEBDRIVER_ENABLED=True)
+    })
 
 
 class TestRequestQueue:
@@ -40,7 +39,7 @@ class TestRequestQueue:
 
     def test_priorization(self):
         webdriver = Mock()
-        settings = self.settings(_WEBDRIVER_INSTANCE=webdriver)
+        settings = self.settings(WEBDRIVER_BROWSER=webdriver)
         webdriver.get.side_effect = self._wait
         webdriver.page_source = u''
 
