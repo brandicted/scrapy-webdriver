@@ -44,7 +44,7 @@ setup(name=metadata.title,
       maintainer_email=metadata.emails[0],
       url=metadata.url,
       description=metadata.description,
-      long_description=read('README.rst'),
+      long_description=read('README.md'),
       download_url=metadata.url,
       classifiers=[
           'Development Status :: 3 - Alpha',
