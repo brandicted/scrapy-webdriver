@@ -13,7 +13,7 @@ class WebdriverManager(object):
         self._lock = Lock()
         self._wait_queue = deque()
         self._wait_inpage_queue = deque()
-        self._webdriver = crawler.settings.get('WEBDRIVER', None)
+        self._webdriver = crawler.settings.get('_WEBDRIVER_INSTANCE', None)
 
     @property
     def webdriver(self):

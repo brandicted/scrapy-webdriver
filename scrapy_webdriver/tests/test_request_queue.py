@@ -40,7 +40,7 @@ class TestRequestQueue:
 
     def test_priorization(self):
         webdriver = Mock()
-        settings = self.settings(WEBDRIVER=webdriver)
+        settings = self.settings(_WEBDRIVER_INSTANCE=webdriver)
         webdriver.get.side_effect = self._wait
         webdriver.page_source = u''
 
