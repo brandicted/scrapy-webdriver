@@ -13,7 +13,7 @@ class WebdriverManager(object):
         self._lock = Lock()
         self._wait_queue = deque()
         self._wait_inpage_queue = deque()
-        self._webdriver = None
+        self._webdriver = crawler.settings.get('WEBDRIVER', None)
 
     @property
     def webdriver(self):
@@ -25,15 +25,12 @@ class WebdriverManager(object):
 
     def acquire(self, request):
         """Acquire lock for the request, or enqueue request upon failure."""
-        print '+ acquiring %s' % request.url,
         assert isinstance(request, WebdriverRequest), \
             'Only a WebdriverRequest can use the webdriver instance.'
         if self._lock.acquire(False):
-            print 'yep'
             request.manager = self
             return request
         else:
-            print 'nope, enqueueing'
             if isinstance(request, WebdriverInPageRequest):
                 queue = self._wait_inpage_queue
             else:
@@ -57,7 +54,6 @@ class WebdriverManager(object):
 
     def release(self, msg):
         """Release the the webdriver instance's lock."""
-        print '- releasing%s' % (msg and ' %r' % msg or '')
         self._lock.release()
 
     def _cleanup(self):

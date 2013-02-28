@@ -1,15 +1,19 @@
 #!/usr/bin/env python
 
-# scrapy_webdriver distutils setup script
+# scrapy_webdriver distutils setup script.
 
 import os
+import sys
+
 from scrapy_webdriver import metadata
 
-# auto-install and download distribute
+# Auto-install and download distribute.
 import distribute_setup
 distribute_setup.use_setuptools()
 
 from setuptools import setup, find_packages
+from setuptools.command.test import test as TestCommand
+
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
@@ -17,6 +21,20 @@ def read(fname):
 install_requirements = [
     'selenium>=2.27.0',
 ]
+
+
+class PyTest(TestCommand):
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        # Import here, cause outside the eggs aren't loaded
+        import pytest
+        errno = pytest.main(self.test_args)
+        sys.exit(errno)
+
 
 setup(name=metadata.title,
       version=metadata.version,
@@ -29,7 +47,7 @@ setup(name=metadata.title,
       long_description=read('README.rst'),
       download_url=metadata.url,
       classifiers=[
-          'Development Status :: 2 - Pre-Alpha',
+          'Development Status :: 3 - Alpha',
           'Environment :: Plugins',
           'Intended Audience :: Developers',
           'License :: OSI Approved :: MIT License',
@@ -40,8 +58,10 @@ setup(name=metadata.title,
           'Topic :: Documentation',
           'Topic :: Software Development :: Libraries :: Python Modules',
           'Topic :: Internet :: WWW/HTTP',
-          ],
+      ],
       packages=find_packages(),
       install_requires=install_requirements,
-      zip_safe=False, # don't use eggs
+      zip_safe=False,
+      tests_require=['mock', 'pytest', 'scrapy'],
+      cmdclass={'test': PyTest},
       )
