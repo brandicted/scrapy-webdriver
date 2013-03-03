@@ -6,9 +6,22 @@ Scrape using Selenium webdriver.
 Installation
 =============
 
-For now, nothing's on pypi, but this should work:
+For now it's not on pypi, but this should work:
 
     pip install https://github.com/sosign/scrapy-webdriver/archive/master.zip
+
+Or something like this, in setup.py:
+
+    setup(
+        install_requires=[
+            'scrapy_webdriver',
+            ...,
+        ],
+        dependency_links=[
+            'https://github.com/sosign/scrapy-webdriver/archive/master.zip#egg=scrapy_webdriver',
+        ],
+        ...,
+        )
 
 Configuration
 =============
@@ -31,7 +44,12 @@ Usage
 
 In order to have webdriver handle your downloads, use the provided
 class `scrapy_webdriver.http.WebdriverRequest` in place of the stock scrapy
-`Request`.
+`Request`, like so:
+
+    from scrapy_webdriver.http import WebdriverRequest
+    yield WebdriverRequest('http://www.example.com')
+
+Parameters not supported (yet?) are: `method`, `body`, `headers`, `cookies`.
 
 Hacking
 =======

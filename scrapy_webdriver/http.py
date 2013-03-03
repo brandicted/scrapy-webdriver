@@ -16,7 +16,7 @@ class WebdriverRequest(Request):
 
 
 class WebdriverInPageRequest(WebdriverRequest):
-    """A Request that handles in-page webdriver actions."""
+    """A Request that handles in-page webdriver actions (action chains)."""
     def __init__(self, response, actions=None, **kwargs):
         kwargs.setdefault('manager', response.request.manager)
         url = kwargs.pop('url', response.request.url)
