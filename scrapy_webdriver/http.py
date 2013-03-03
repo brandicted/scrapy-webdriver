@@ -1,4 +1,5 @@
 from scrapy.http import Request, TextResponse
+from selenium.webdriver.common.action_chains import ActionChains
 
 
 class WebdriverRequest(Request):
@@ -16,7 +17,18 @@ class WebdriverRequest(Request):
 
 class WebdriverInPageRequest(WebdriverRequest):
     """A Request that handles in-page webdriver actions."""
-    pass
+    def __init__(self, response, actions=None, **kwargs):
+        kwargs.setdefault('manager', response.request.manager)
+        url = kwargs.pop('url', response.request.url)
+        super(WebdriverInPageRequest, self).__init__(url, **kwargs)
+        self._response = response
+        self.actions = actions or response.actions
+        self.parent = response.request
+
+    def replace(self, *args, **kwargs):
+        kwargs.setdefault('response', self._response)
+        kwargs.setdefault('actions', self.actions)
+        return super(WebdriverInPageRequest, self).replace(*args, **kwargs)
 
 
 class WebdriverResponse(TextResponse):
@@ -25,3 +37,9 @@ class WebdriverResponse(TextResponse):
         kwargs.setdefault('body', webdriver.page_source)
         kwargs.setdefault('encoding', 'utf-8')
         super(WebdriverResponse, self).__init__(url, **kwargs)
+        self.actions = ActionChains(webdriver)
+        self.webdriver = webdriver
+
+    def inpage_request(self, **kwargs):
+        """Return a Request object to perform the recorded actions."""
+        return WebdriverInPageRequest(self, **kwargs)

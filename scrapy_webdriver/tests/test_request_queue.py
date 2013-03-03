@@ -1,3 +1,4 @@
+from functools import partial
 from time import sleep
 
 from mock import call, Mock
@@ -9,7 +10,7 @@ from scrapy.spider import BaseSpider
 from scrapy.xlib.pydispatch import dispatcher
 from twisted.internet import reactor
 
-from scrapy_webdriver.http import WebdriverRequest, WebdriverInPageRequest
+from scrapy_webdriver.http import WebdriverRequest
 
 BASE_SETTINGS = dict(
     DOWNLOAD_HANDLERS={
@@ -55,15 +56,15 @@ class TestRequestQueue:
 
         assert webdriver.get.mock_calls == [
             call('http://testdomain/path?wr=0'),
-            call('http://testdomain/path?wr=0&s=0'),
-            call('http://testdomain/path?wr=0&s=1'),
+            call('http://testdomain/path?wr=0&wa=0'),
+            call('http://testdomain/path?wr=0&wa=1'),
             call('http://testdomain/path?wr=1'),
-            call('http://testdomain/path?wr=1&s=0'),
-            call('http://testdomain/path?wr=1&s=1'),
-            call('http://testdomain/path?wr=0&s=0&wr=0'),
-            call('http://testdomain/path?wr=0&s=1&wr=0'),
-            call('http://testdomain/path?wr=1&s=0&wr=0'),
-            call('http://testdomain/path?wr=1&s=1&wr=0')]
+            call('http://testdomain/path?wr=1&wa=0'),
+            call('http://testdomain/path?wr=1&wa=1'),
+            call('http://testdomain/path?wr=0&wa=0&wr=0'),
+            call('http://testdomain/path?wr=0&wa=1&wr=0'),
+            call('http://testdomain/path?wr=1&wa=0&wr=0'),
+            call('http://testdomain/path?wr=1&wa=1&wr=0')]
 
     class Spider(BaseSpider):
         def start_requests(self):
@@ -72,9 +73,18 @@ class TestRequestQueue:
                 yield Request('http://testdomain/path?r=%d' % i)
 
         def parse(self, response):
+            def get(url):
+                response.webdriver.get(url)
+
             for i in xrange(2):
-                yield WebdriverInPageRequest('%s&s=%d' % (response.url, i),
-                                            callback=self.parse_inpage)
+                fake_url = '%s&wa=%d' % (response.url, i)
+                request = response.inpage_request(url=fake_url,
+                                                  callback=self.parse_inpage)
+                # Leave a trace in the webdriver instance mock so we can look
+                # at the request processing order.
+                request.actions = Mock()
+                request.actions.perform.side_effect = partial(get, fake_url)
+                yield request
 
         def parse_inpage(self, response):
             yield WebdriverRequest('%s&wr=%d' % (response.url, 0),

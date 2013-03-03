@@ -38,6 +38,7 @@ class WebdriverDownloadHandler(object):
     @inthread
     def _do_inpage_request(self, request, spider):
         """Perform an action on a previously webdriver-loaded page."""
-        log.msg('Running webdriver action %s' % request.url, level=log.DEBUG)
-        request.manager.webdriver.get(request.url)
+        log.msg('Running webdriver actions %s' % request.url, level=log.DEBUG)
+        request.actions.perform()
+        import time; time.sleep(2)
         return WebdriverResponse(request.url, request.manager.webdriver)
