@@ -3,6 +3,11 @@ scrapy-webdriver
 
 Scrape using Selenium webdriver.
 
+Not well tested. Has probably lots of bugs, unhandled situations, and scrapy
+integration problems. Use at your own risk.
+
+That being said, it works for me, in all its non-blocking glory.
+
 Installation
 =============
 
