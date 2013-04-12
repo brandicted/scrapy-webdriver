@@ -66,7 +66,8 @@ class _NodeAttribute(object):
 
 class _TextNode(object):
     """Works around webdriver XPath inability to select text nodes."""
-    JS_FIND_FIRST_TEXT_NODE = 'return arguments[0].firstChild.nodeValue'
+    JS_FIND_FIRST_TEXT_NODE = ('return arguments[0].firstChild '
+                               '&& arguments[0].firstChild.nodeValue')
 
     def __init__(self, webdriver, element):
         self.element = element
