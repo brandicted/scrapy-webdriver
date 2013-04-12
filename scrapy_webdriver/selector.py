@@ -30,14 +30,13 @@ class WebdriverXPathSelector(XPathSelector):
         """Return elements using webdriver `find_elements_by_xpath` method."""
         xpathev = self.element if self.element else self.webdriver
         ending = _UNSUPPORTED_XPATH_ENDING.match(xpath)
+        atsign = parens = None
         if ending:
             match, atsign, name, parens = ending.groups()
             if atsign:
                 xpath = xpath[:-len(name) - 2]
             elif parens and name == 'text':
                 xpath = xpath[:-len(name) - 3]
-        else:
-            atsign = parens = None
         result = self._make_result(xpathev.find_elements_by_xpath(xpath))
         if atsign:
             result = (_NodeAttribute(r.element, name) for r in result)
