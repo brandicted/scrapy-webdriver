@@ -27,7 +27,17 @@ class WebdriverXPathSelector(XPathSelector):
                 for e in result]
 
     def select(self, xpath):
-        """Return elements using webdriver `find_elements_by_xpath` method."""
+        """Return elements using the webdriver `find_elements_by_xpath` method.
+
+        Some XPath features are not supported by the webdriver implementation.
+        Namely, selecting text content or attributes:
+          - /some/element/text()
+          - /some/element/@attribute
+
+        This function offers workarounds for both, so it should be safe to use
+        them as you would with HtmlXPathSelector for simple content extraction.
+
+        """
         xpathev = self.element if self.element else self.webdriver
         ending = _UNSUPPORTED_XPATH_ENDING.match(xpath)
         atsign = parens = None
