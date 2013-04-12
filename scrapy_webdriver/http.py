@@ -32,7 +32,7 @@ class WebdriverInPageRequest(WebdriverRequest):
 
 
 class WebdriverResponse(TextResponse):
-    """A Response that will feed the webdriver page into its body. Uhuhuh."""
+    """A Response that will feed the webdriver page into its body."""
     def __init__(self, url, webdriver, **kwargs):
         kwargs.setdefault('body', webdriver.page_source)
         kwargs.setdefault('encoding', 'utf-8')
