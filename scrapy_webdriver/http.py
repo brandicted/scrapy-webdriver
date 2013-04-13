@@ -42,4 +42,5 @@ class WebdriverResponse(TextResponse):
 
     def inpage_request(self, **kwargs):
         """Return a Request object to perform the recorded actions."""
+        kwargs.setdefault('meta', self.meta)
         return WebdriverInPageRequest(self, **kwargs)
