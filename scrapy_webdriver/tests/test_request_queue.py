@@ -78,15 +78,15 @@ class TestRequestQueue:
 
             for i in xrange(2):
                 fake_url = '%s&wa=%d' % (response.url, i)
-                request = response.inpage_request(url=fake_url,
-                                                  callback=self.parse_inpage)
+                request = response.action_request(url=fake_url,
+                                                  callback=self.parse_action)
                 # Leave a trace in the webdriver instance mock so we can look
                 # at the request processing order.
                 request.actions = Mock()
                 request.actions.perform.side_effect = partial(get, fake_url)
                 yield request
 
-        def parse_inpage(self, response):
+        def parse_action(self, response):
             yield WebdriverRequest('%s&wr=%d' % (response.url, 0),
                                    callback=self.parse_nothing)
 

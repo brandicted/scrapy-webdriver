@@ -3,7 +3,7 @@ from threading import Lock
 
 from scrapy.signals import engine_stopped
 from selenium import webdriver
-from scrapy_webdriver.http import WebdriverRequest, WebdriverInPageRequest
+from scrapy_webdriver.http import WebdriverRequest, WebdriverActionRequest
 
 
 class WebdriverManager(object):
@@ -55,7 +55,7 @@ class WebdriverManager(object):
             request.manager = self
             return request
         else:
-            if isinstance(request, WebdriverInPageRequest):
+            if isinstance(request, WebdriverActionRequest):
                 queue = self._wait_inpage_queue
             else:
                 queue = self._wait_queue

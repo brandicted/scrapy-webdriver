@@ -2,7 +2,7 @@ from scrapy import log
 from scrapy.utils.decorator import inthread
 from scrapy.utils.misc import load_object
 
-from .http import WebdriverInPageRequest, WebdriverRequest, WebdriverResponse
+from .http import WebdriverActionRequest, WebdriverRequest, WebdriverResponse
 
 FALLBACK_HANDLER = 'scrapy.core.downloader.handlers.http.HttpDownloadHandler'
 
@@ -20,8 +20,8 @@ class WebdriverDownloadHandler(object):
     def download_request(self, request, spider):
         """Return the result of the right download method for the request."""
         if self._enabled and isinstance(request, WebdriverRequest):
-            if isinstance(request, WebdriverInPageRequest):
-                download = self._do_inpage_request
+            if isinstance(request, WebdriverActionRequest):
+                download = self._do_action_request
             else:
                 download = self._download_request
         else:
@@ -36,7 +36,7 @@ class WebdriverDownloadHandler(object):
         return WebdriverResponse(request.url, request.manager.webdriver)
 
     @inthread
-    def _do_inpage_request(self, request, spider):
+    def _do_action_request(self, request, spider):
         """Perform an action on a previously webdriver-loaded page."""
         log.msg('Running webdriver actions %s' % request.url, level=log.DEBUG)
         request.actions.perform()

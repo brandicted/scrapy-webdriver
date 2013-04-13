@@ -1,6 +1,6 @@
 from scrapy.exceptions import IgnoreRequest, NotConfigured
 
-from .http import WebdriverInPageRequest, WebdriverRequest
+from .http import WebdriverActionRequest, WebdriverRequest
 from .manager import WebdriverManager
 
 
@@ -50,7 +50,7 @@ class WebdriverSpiderMiddleware(object):
         error_msg = "WebdriverRequests from start_requests can't be in-page."
         for request in iter(items_or_requests):
             if isinstance(request, WebdriverRequest):
-                if start and isinstance(request, WebdriverInPageRequest):
+                if start and isinstance(request, WebdriverActionRequest):
                     raise IgnoreRequest(error_msg)
                 request = self.manager.acquire(request)
                 if request is WebdriverRequest.WAITING:

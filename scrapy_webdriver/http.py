@@ -15,12 +15,12 @@ class WebdriverRequest(Request):
         return super(WebdriverRequest, self).replace(*args, **kwargs)
 
 
-class WebdriverInPageRequest(WebdriverRequest):
+class WebdriverActionRequest(WebdriverRequest):
     """A Request that handles in-page webdriver actions (action chains)."""
     def __init__(self, response, actions=None, **kwargs):
         kwargs.setdefault('manager', response.request.manager)
         url = kwargs.pop('url', response.request.url)
-        super(WebdriverInPageRequest, self).__init__(url, **kwargs)
+        super(WebdriverActionRequest, self).__init__(url, **kwargs)
         self._response = response
         self.actions = actions or response.actions
         self.parent = response.request
@@ -28,7 +28,7 @@ class WebdriverInPageRequest(WebdriverRequest):
     def replace(self, *args, **kwargs):
         kwargs.setdefault('response', self._response)
         kwargs.setdefault('actions', self.actions)
-        return super(WebdriverInPageRequest, self).replace(*args, **kwargs)
+        return super(WebdriverActionRequest, self).replace(*args, **kwargs)
 
 
 class WebdriverResponse(TextResponse):
@@ -40,7 +40,7 @@ class WebdriverResponse(TextResponse):
         self.actions = ActionChains(webdriver)
         self.webdriver = webdriver
 
-    def inpage_request(self, **kwargs):
+    def action_request(self, **kwargs):
         """Return a Request object to perform the recorded actions."""
         kwargs.setdefault('meta', self.meta)
-        return WebdriverInPageRequest(self, **kwargs)
+        return WebdriverActionRequest(self, **kwargs)
