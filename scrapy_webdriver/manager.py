@@ -17,6 +17,8 @@ class WebdriverManager(object):
         self._wait_inpage_queue = deque()
         self._browser = crawler.settings.get('WEBDRIVER_BROWSER', None)
         self._user_agent = crawler.settings.get('USER_AGENT', None)
+        self._web_driver_options = crawler.settings.get('WEBDRIVER_OPTIONS',
+                                                        dict())
         self._webdriver = None
         if isinstance(self._browser, basestring):
             self._browser = getattr(webdriver, self._browser)
@@ -42,7 +44,8 @@ class WebdriverManager(object):
     def webdriver(self):
         """Return the webdriver instance, instantiate it if necessary."""
         if self._webdriver is None:
-            options = dict(desired_capabilities=self._desired_capabilities)
+            options = self._web_driver_options
+            options['desired_capabilities'] = self._desired_capabilities
             self._webdriver = self._browser(**options)
             self.crawler.signals.connect(self._cleanup, signal=engine_stopped)
         return self._webdriver
