@@ -43,6 +43,8 @@ Add something like this in your scrapy project settings:
     }
 
     WEBDRIVER_BROWSER = 'PhantomJS'  # Or any other from selenium.webdriver
+                                     # or 'your_package.CustomWebdriverClass'
+                                     # or an actual class instead of a string.
     # Optional passing of parameters to the webdriver
     WEBDRIVER_OPTIONS = {
         'service_args': ['--debug=true', '--load-images=false', '--webdriver-loglevel=debug']

@@ -75,7 +75,12 @@ class _NodeAttribute(object):
 
 
 class _TextNode(object):
-    """Works around webdriver XPath inability to select text nodes."""
+    """Works around webdriver XPath inability to select text nodes.
+
+    It's a rather contrived element API implementation, it should probably
+    be expanded.
+
+    """
     JS_FIND_FIRST_TEXT_NODE = ('return arguments[0].firstChild '
                                '&& arguments[0].firstChild.nodeValue')
 

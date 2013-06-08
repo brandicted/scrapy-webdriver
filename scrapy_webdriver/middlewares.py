@@ -11,10 +11,11 @@ class WebdriverSpiderMiddleware(object):
 
     @classmethod
     def from_crawler(cls, crawler):
-        if not WebdriverManager.valid_settings(crawler.settings):
-            raise NotConfigured('WEBDRIVER_BROWSER is misconfigured: %r'
-                                % crawler.settings.get('WEBDRIVER_BROWSER'))
-        return cls(crawler)
+        try:
+            return cls(crawler)
+        except Exception as e:
+            raise NotConfigured('WEBDRIVER_BROWSER is misconfigured: %r (%r)'
+                % (crawler.settings.get('WEBDRIVER_BROWSER'), e))
 
     def process_start_requests(self, start_requests, spider):
         """Return start requests, with some reordered by the manager.

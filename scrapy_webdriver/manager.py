@@ -1,9 +1,10 @@
+import inspect
 from collections import deque
 from threading import Lock
 
 from scrapy.signals import engine_stopped
-from selenium import webdriver
 from scrapy_webdriver.http import WebdriverRequest, WebdriverActionRequest
+from selenium import webdriver
 
 
 class WebdriverManager(object):
@@ -17,12 +18,18 @@ class WebdriverManager(object):
         self._wait_inpage_queue = deque()
         self._browser = crawler.settings.get('WEBDRIVER_BROWSER', None)
         self._user_agent = crawler.settings.get('USER_AGENT', None)
-        self._web_driver_options = crawler.settings.get('WEBDRIVER_OPTIONS',
-                                                        dict())
+        self._options = crawler.settings.get('WEBDRIVER_OPTIONS', dict())
         self._webdriver = None
         if isinstance(self._browser, basestring):
-            self._browser = getattr(webdriver, self._browser)
-        elif self._browser is not None:
+            if '.' in self._browser:
+                module, browser = self._browser.rsplit('.', 2)
+            else:
+                module, browser = 'selenium.webdriver', self._browser
+            module = __import__(module, fromlist=[browser])
+            self._browser = getattr(module, browser)
+        elif inspect.isclass(self._browser):
+            self._browser = self._browser
+        else:
             self._webdriver = self._browser
 
     @property
@@ -32,20 +39,17 @@ class WebdriverManager(object):
             capabilities[self.USER_AGENT_KEY] = self._user_agent
         return capabilities or None
 
-    @classmethod
-    def valid_settings(cls, settings):
-        browser = settings.get('WEBDRIVER_BROWSER')
-        if isinstance(browser, basestring):
-            return getattr(webdriver, browser, None) is not None
-        else:
-            return browser is not None
-
     @property
     def webdriver(self):
         """Return the webdriver instance, instantiate it if necessary."""
         if self._webdriver is None:
-            options = self._web_driver_options
-            options['desired_capabilities'] = self._desired_capabilities
+            short_arg_classes = (webdriver.Firefox, webdriver.Ie)
+            if issubclass(self._browser, short_arg_classes):
+                cap_attr = 'capabilities'
+            else:
+                cap_attr = 'desired_capabilities'
+            options = self._options
+            options[cap_attr] = self._desired_capabilities
             self._webdriver = self._browser(**options)
             self.crawler.signals.connect(self._cleanup, signal=engine_stopped)
         return self._webdriver
