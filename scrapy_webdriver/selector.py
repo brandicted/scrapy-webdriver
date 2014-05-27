@@ -1,11 +1,11 @@
 import re
 
-from scrapy.selector import XPathSelector, XPathSelectorList
+from scrapy.selector import Selector, XPathSelectorList
 
 _UNSUPPORTED_XPATH_ENDING = re.compile(r'.*/((@)?([^/()]+)(\(\))?)$')
 
 
-class WebdriverXPathSelector(XPathSelector):
+class WebdriverXPathSelector(Selector):
     """Scrapy selector that works using XPath selectors in a remote browser.
 
     Based on some code from Marconi Moreto:

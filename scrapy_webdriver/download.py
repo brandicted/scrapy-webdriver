@@ -4,7 +4,7 @@ from scrapy.utils.misc import load_object
 
 from .http import WebdriverActionRequest, WebdriverRequest, WebdriverResponse
 
-FALLBACK_HANDLER = 'scrapy.core.downloader.handlers.http.HttpDownloadHandler'
+FALLBACK_HANDLER = 'scrapy.core.downloader.handlers.http10.HTTP10DownloadHandler'  # NOQA
 
 
 class WebdriverDownloadHandler(object):
