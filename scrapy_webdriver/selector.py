@@ -1,6 +1,9 @@
 import re
 
-from scrapy.selector import Selector, XPathSelectorList
+try:
+    from scrapy.selector import Selector, XPathSelectorList
+except ImportError:  # scrapy < 0.20
+    from scrapy.selector import XPathSelector as Selector, XPathSelectorList
 
 _UNSUPPORTED_XPATH_ENDING = re.compile(r'.*/((@)?([^/()]+)(\(\))?)$')
 
