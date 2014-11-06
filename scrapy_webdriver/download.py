@@ -6,6 +6,8 @@ from .http import WebdriverActionRequest, WebdriverRequest, WebdriverResponse
 
 if map(int, version_info) < [0, 18]:
     FALLBACK_HANDLER = 'http.HttpDownloadHandler'
+elif map(int, version_info) > [0, 24, 4]:
+    FALLBACK_HANDLER = 'http.HTTPDownloadHandler'
 else:
     FALLBACK_HANDLER = 'http10.HTTP10DownloadHandler'
 FALLBACK_HANDLER = 'scrapy.core.downloader.handlers.%s' % FALLBACK_HANDLER
